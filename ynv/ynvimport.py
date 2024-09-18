@@ -11,14 +11,11 @@ def points_to_obj(points):
     pobj.empty_display_size = 0
 
     for idx, point in enumerate(points):
-        mesh = bpy.data.meshes.new(SOLLUMZ_UI_NAMES[SollumType.NAVMESH_POINT])
-        obj = bpy.data.objects.new(
-            SOLLUMZ_UI_NAMES[SollumType.NAVMESH_POINT] + " " + str(idx), mesh)
+        obj = bpy.data.objects.new(SOLLUMZ_UI_NAMES[SollumType.NAVMESH_POINT] + " " + str(idx), None)
         obj.sollum_type = SollumType.NAVMESH_POINT
         obj.parent = pobj
-
-        # properties
-        create_box(mesh, 0.5)
+        obj.empty_display_size = 0.5
+        obj.empty_display_type = "CONE"
         obj.location = point.position
         obj.rotation_euler = (0, 0, point.angle)
         bpy.context.collection.objects.link(obj)
