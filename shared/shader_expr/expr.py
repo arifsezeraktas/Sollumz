@@ -181,6 +181,41 @@ class FloatBinaryExpr(FloatExpr):
         return var_id
 
 
+class FloatUnaryExprOp(IntEnum):
+    ROUND = 0
+    TRUNC = 1
+
+    def token(self) -> str:
+        match self:
+            case FloatUnaryExprOp.ROUND:
+                return "roundf"
+            case FloatUnaryExprOp.ROUND:
+                return "truncf"
+            case _:
+                raise NotImplementedError(f"'{self}' not implemented!")
+
+
+class FloatUnaryExpr(FloatExpr):
+    """Operation on a float that produces another float."""
+
+    value: FloatExpr
+    op: FloatUnaryExprOp
+
+    def __init__(self, value: Floaty, op: FloatUnaryExprOp):
+        self.value = floaty(value)
+        self.op = op
+
+    def __str__(self):
+        return f"{self.op.token()}({self.value})"
+
+    def dump(self, ctx: ExprDumpContext) -> str:
+        def g():
+            value_id = self.value.dump(ctx)
+            return f"{self.op.token}({value_id})"
+        var_id = ctx.get_var_id(self, g)
+        return var_id
+
+
 class FloatMapRangeExpr(FloatExpr):
     """Remap a float value from a range to a target range."""
 
@@ -215,30 +250,6 @@ class FloatMapRangeExpr(FloatExpr):
             to_min_id = self.to_min.dump(ctx)
             to_max_id = self.to_max.dump(ctx)
             return f"map_range({value_id}, {from_min_id}, {from_max_id}, {to_min_id}, {to_max_id}, {self.clamp})"
-        var_id = ctx.get_var_id(self, g)
-        return var_id
-
-
-class FloatRoundExpr(FloatExpr):
-    """Round a float value."""
-
-    value: FloatExpr
-    clamp: bool
-
-    def __init__(
-        self, value: Floaty,
-        clamp: bool = False
-    ):
-        self.value = floaty(value)
-        self.clamp = clamp
-
-    def __str__(self):
-        return f"round({self.value}, {self.clamp})"
-
-    def dump(self, ctx: ExprDumpContext) -> str:
-        def g():
-            value_id = self.value.dump(ctx)
-            return f"round({value_id}, {self.clamp})"
         var_id = ctx.get_var_id(self, g)
         return var_id
 

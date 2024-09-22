@@ -4,7 +4,8 @@ from .expr import (
     FloatExpr,
     FloatConstantExpr,
     FloatMapRangeExpr,
-    FloatRoundExpr,
+    FloatUnaryExpr,
+    FloatUnaryExprOp,
     VectorExpr,
     VectorConstantExpr,
     VectorMixColorExpr,
@@ -90,9 +91,14 @@ def map_range(*args, **kwargs) -> FloatExpr:
     return FloatMapRangeExpr(*args, **kwargs)
 
 
-def roundf(*args, **kwargs) -> FloatExpr:
-    """Round a float value. See ``FloatRoundExpr`` for parameters."""
-    return FloatRoundExpr(*args, **kwargs)
+def roundf(value: Floaty) -> FloatExpr:
+    """Round a float value."""
+    return FloatUnaryExpr(value, FloatUnaryExprOp.ROUND)
+
+
+def truncf(value: Floaty) -> FloatExpr:
+    """Truncate a float value."""
+    return FloatUnaryExpr(value, FloatUnaryExprOp.TRUNC)
 
 
 def mix_color(*args, **kwargs) -> VectorExpr:

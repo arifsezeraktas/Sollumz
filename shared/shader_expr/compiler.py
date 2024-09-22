@@ -94,10 +94,17 @@ class Compiler:
 
         return CompiledExpr(map_range, 0)
 
-    def visit_FloatRoundExpr(self, e: expr.FloatRoundExpr) -> CompiledExpr:
+    def visit_FloatUnaryExpr(self, e: expr.FloatUnaryExpr) -> CompiledExpr:
+        match e.op:
+            case expr.FloatUnaryExprOp.ROUND:
+                op = "ROUND"
+            case expr.FloatUnaryExprOp.TRUNC:
+                op = "TRUNC"
+            case _:
+                raise NotImplementedError(f"{e.op} not implemented!")
+
         math = self.node_tree.nodes.new("ShaderNodeMath")
-        math.operation = "ROUND"
-        math.use_clamp = e.clamp
+        math.operation = op
         self.connect_float_input(e.value, math, "Value")
         return CompiledExpr(math, 0)
 
